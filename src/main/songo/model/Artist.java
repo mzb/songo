@@ -8,4 +8,12 @@ public class Artist extends Model {
  public Artist(String name) {
    this.name = name;
  }
+ 
+ public String toString() {
+   StringBuilder sb = new StringBuilder("<Artist ");
+   sb.append(" id=").append(this.id).
+      append(" name=").append(this.name).
+      append(">");
+   return sb.toString();
+ }
 }

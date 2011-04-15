@@ -33,7 +33,7 @@ public class QueryResults {
       throw new Database.Error(e);
     }
   }
-  
+
   public void close() throws Database.Error { 
     try {
       rs.close();

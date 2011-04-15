@@ -19,14 +19,25 @@ import javax.swing.JCheckBox;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.AbstractListModel;
 import javax.swing.table.DefaultTableModel;
+
+import songo.Application;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 
 public class ContentPanel extends JDesktopPane {
-  public ContentPanel(Dimension size) {
+  private JButton addButton;
+  private JButton editButton;
+  private JButton deleteButton;
+  private ArtistsPanel artistsPanel;
+  private AlbumsPanel albumsPanel;
+  private SongsPanel songsPanel;
+
+  public ContentPanel(final Application app) {
+    final Dimension size = new Dimension(800, 700); 
     setSize(size);
-    setPreferredSize(new Dimension(800, 700));
+    setPreferredSize(size);
     setFocusable(true);
     
     SearchPanel searchPanel = new SearchPanel();
@@ -35,26 +46,15 @@ public class ContentPanel extends JDesktopPane {
     collectionPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
     collectionPanel.setResizeWeight(0.5);
     
-    JButton addButton = new JButton("+ Dodaj");
+    addButton = new JButton("+ Dodaj");
     addButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
-      }
-    });
-    JButton editButton = new JButton("Edytuj");
-    editButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        EditSongPanel editSongPanel = new EditSongPanel();
-        add(editSongPanel);
-        try {
-          editSongPanel.setSelected(true);
-        } catch (PropertyVetoException e1) {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
-        }
+        app.addSong();
       }
     });
+    editButton = new JButton("Edytuj");
     
-    JButton deleteButton = new JButton("- Usuń");
+    deleteButton = new JButton("- Usuń");
     
     GroupLayout groupLayout = new GroupLayout(this);
     groupLayout.setHorizontalGroup(
@@ -91,16 +91,28 @@ public class ContentPanel extends JDesktopPane {
     artistsAlbumsPanel.setResizeWeight(0.5);
     collectionPanel.setLeftComponent(artistsAlbumsPanel);
     
-    ArtistsPanel artistsPanel = new ArtistsPanel();
+    artistsPanel = new ArtistsPanel(app);
     artistsAlbumsPanel.setLeftComponent(artistsPanel);
     
-    AlbumsPanel albumsPanel = new AlbumsPanel();
+    albumsPanel = new AlbumsPanel(app);
     artistsAlbumsPanel.setRightComponent(albumsPanel);
     
-    SongsPanel songsPanel = new SongsPanel();
+    songsPanel = new SongsPanel(app);
     collectionPanel.setRightComponent(songsPanel);
     
     setLayout(groupLayout);
     
+  }
+  
+  public ArtistsPanel getArtistsPanel() {
+    return artistsPanel;
+  }
+  
+  public AlbumsPanel getAlbumsPanel() {
+    return albumsPanel;
+  }
+  
+  public SongsPanel getSongsPanel() {
+    return songsPanel;
   }
 }

@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 public class Database {
@@ -137,5 +139,22 @@ public class Database {
     public Error(Throwable e) {
       super(e);
     }
+  }
+  
+  
+  public static String sqlize(String operator, List<? extends Object> conditions) {
+    StringBuilder sql = new StringBuilder();
+    for (int i = 0; i < conditions.size(); i++) {
+      sql.append(conditions.get(i));
+      if (i < conditions.size()-1) {
+        sql.append(" " + operator + " ");
+      }
+    }
+    System.err.println(sql);
+    return sql.toString();
+  }
+  
+  public static String sqlize(List<Long> ids) {
+    return sqlize(",", ids);
   }
 }
