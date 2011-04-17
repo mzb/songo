@@ -33,6 +33,7 @@ public class ContentPanel extends JDesktopPane implements ActionListener {
   ArtistsPanel artistsPanel;
   AlbumsPanel albumsPanel;
   SongsPanel songsPanel;
+  SearchPanel searchPanel;
   final ApplicationController app;
 
   public ContentPanel(ApplicationController app) {
@@ -46,7 +47,7 @@ public class ContentPanel extends JDesktopPane implements ActionListener {
     setPreferredSize(size);
     setFocusable(true);
     
-    SearchPanel searchPanel = new SearchPanel(app);
+    searchPanel = new SearchPanel(app);
     
     JSplitPane collectionPanel = new JSplitPane();
     collectionPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -145,5 +146,9 @@ public class ContentPanel extends JDesktopPane implements ActionListener {
   
   public SongsPanel getSongsPanel() {
     return songsPanel;
+  }
+  
+  public SearchPanel getSearchPanel() {
+    return searchPanel;
   }
 }

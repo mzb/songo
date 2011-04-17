@@ -150,7 +150,6 @@ public class Database {
         sql.append(" " + operator + " ");
       }
     }
-    System.err.println(sql);
     return sql.toString();
   }
   

@@ -46,7 +46,6 @@ public class ListPanel extends JScrollPane implements ListSelectionListener {
   }
   
   public Long getSelectedId() {
-    System.err.println(rowsIds);
     return rowsIds.get(list.getSelectedIndex());
   }
   

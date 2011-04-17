@@ -1,35 +1,34 @@
 package songo;
 
-import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.filechooser.FileFilter;
 
 import songo.db.Database;
 import songo.db.Database.Error;
+import songo.db.ModelManager.ValidationErrors;
 import songo.model.Album;
 import songo.model.AlbumsManager;
 import songo.model.Artist;
 import songo.model.ArtistsManager;
 import songo.model.Song;
 import songo.model.SongsManager;
-import songo.ui.AddSongPanel;
+import songo.ui.EditSongPanel;
 import songo.ui.AlbumsPanel;
 import songo.ui.ArtistsPanel;
 import songo.ui.ContentPanel;
 import songo.ui.Frame;
+import songo.ui.SearchPanel;
 import songo.ui.SongsPanel;
 
-public class Application {
+public class ApplicationController {
   static final Logger log = Logger.getLogger("Application");
   // TODO: => Arg wywolania
   static final String CONFIG_FILE = "config/test.properties";
@@ -44,11 +43,11 @@ public class Application {
   ArtistsPanel artistsPanel;
   AlbumsPanel albumsPanel;
   SongsPanel songsPanel;
+  EditSongPanel editSongPanel;
+  SearchPanel searchPanel;
   Frame frame;
   
-  AddSongPanel songPanel;
-  
-  public Application(String[] args) {
+  public ApplicationController(String[] args) {
     log.info("Starting");
     
     Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -74,7 +73,7 @@ public class Application {
       frame.exception(e);
     }
     
-    loadArtists(null);
+    search();
   }
 
   private void loadUI() {
@@ -83,6 +82,7 @@ public class Application {
     artistsPanel = contentPanel.getArtistsPanel();
     albumsPanel = contentPanel.getAlbumsPanel();
     songsPanel = contentPanel.getSongsPanel();
+    searchPanel = contentPanel.getSearchPanel();
     frame = new Frame("Songo", contentPanel, new WindowAdapter() {
       public void windowClosed(WindowEvent e) {
         close();
@@ -90,7 +90,12 @@ public class Application {
     });
   }
   
-  public void loadArtists(String conditions) {
+  public void loadArtistsAndSelect(String conditions, int index) {
+    loadArtists(conditions);
+    artistsPanel.select(0);
+  }
+
+  protected void loadArtists(String conditions) {
     List<Artist> artists = new ArrayList<Artist>();
     try {
       long count = artistsManager.count(conditions);
@@ -101,10 +106,14 @@ public class Application {
       frame.exception(e);
     }
     artistsPanel.setData(artists);
-    artistsPanel.select(0);
   }
   
-  public void loadAlbums(String conditions) {
+  public void loadAlbumsAndSelect(String conditions, int index) {
+    loadAlbums(conditions);
+    albumsPanel.select(0);
+  }
+
+  protected void loadAlbums(String conditions) {
     List<Album> albums = new ArrayList<Album>();
     try {
       long count = albumsManager.count(conditions);
@@ -115,12 +124,13 @@ public class Application {
       frame.exception(e);
     }
     albumsPanel.setData(albums);
-    albumsPanel.select(0);
   }
   
   public void loadSongs(String conditions) {
     try {
-      songsPanel.setData(songsManager.find(conditions, "artist_name, album_title, track_number", null));
+      List<Song> songs = songsManager.find(conditions, 
+          "artist_name, album_title, track_number", null);
+      songsPanel.setData(songs);
     } catch (Database.Error e) {
       log.log(Level.WARNING, "", e);
       frame.exception(e);
@@ -128,22 +138,76 @@ public class Application {
   }
   
   public void addSong() {
-    openAddSongPanel();
+    openEditSongPanel(null);
   }
   
-  public void saveSong(Map<String, String> attrs) {
-    log.info(attrs.toString());
+  public void editSong() {
+    Long songId = songsPanel.getSelectedId();
     try {
-      songsManager.save(attrs);
-      closeSongPanel();
+      Song song = songsManager.findById(songId);
+      openEditSongPanel(song);
+    } catch (Database.Error e) {
+      log.log(Level.WARNING, "", e);
+      frame.exception(e);
+    }
+  }
+  
+  public void saveSong(Long id, Map<String, String> attrs) {
+    try {
+      songsManager.save(id, attrs);
+      closeEditSongPanel();
+      search();
+    } catch (ValidationErrors e) {
+      frame.error("Edycja utworu", e.getErrors());
     } catch (Database.Error e) {
       log.log(Level.SEVERE, "", e);
       frame.exception(e);
     }
   }
   
-  public ContentPanel getContentPanel() {
-    return contentPanel;
+  public void deleteSong() {
+    Long songId = songsPanel.getSelectedId();
+    try {
+      Song song = songsManager.findById(songId);
+      boolean confirmed = frame.confirmation("Usuwanie utworu", 
+          "Czy na pewno chcesz usunąć utwór\n%s?", 
+          "Tak, usuń", "Nie usuwaj", song.title);
+      if (confirmed) {
+        songsManager.delete(song);
+        search();
+      }
+    } catch (Database.Error e) {
+      log.log(Level.WARNING, "", e);
+      frame.exception(e);
+    }
+  }
+  
+  public void search() {
+    try {
+      String searchQuery = getSearchQuery();
+      List<Long> artistsIds = songsManager.getArtistsIds(searchQuery);
+      loadArtistsAndSelect(artistsIds.isEmpty() ? 
+          "FALSE" : String.format("id in (%s)", Database.sqlize(artistsIds)), 
+          0);
+    } catch (Database.Error e) {
+      log.log(Level.WARNING, "", e);
+      frame.exception(e);
+    }
+  }
+
+  private String getSearchQuery() {
+    List<String> conditions = new ArrayList<String>();
+    Map<String, Boolean> scope = searchPanel.getScope();
+    if (scope.get("artists")) {
+      conditions.add(String.format("artists.name like '%%%s%%'", searchPanel.getQueryString()));
+    }
+    if (scope.get("albums")) {
+      conditions.add(String.format("albums.title like '%%%s%%'", searchPanel.getQueryString()));
+    }
+    if (scope.get("songs")) {
+      conditions.add(String.format("songs.title like '%%%s%%'", searchPanel.getQueryString()));
+    }
+    return conditions.isEmpty() ? null : "(" + Database.sqlize("OR", conditions) + ")";
   }
   
   public void close() {
@@ -157,16 +221,16 @@ public class Application {
     }
   }
   
-  protected void openAddSongPanel() {
-    if (songPanel != null && !songPanel.isClosed()) {
+  protected void openEditSongPanel(Song song) {
+    if (editSongPanel != null && !editSongPanel.isClosed()) {
       return;
     }
-    songPanel = new AddSongPanel(this);
+    editSongPanel = new EditSongPanel(this, song);
   }
   
-  protected void closeSongPanel() {
-    if (songPanel != null) {
-      songPanel.close();
+  protected void closeEditSongPanel() {
+    if (editSongPanel != null) {
+      editSongPanel.close();
     }
   }
 
@@ -190,31 +254,51 @@ public class Application {
   }
 
   public void albumSelected() {
-    long albumId = albumsPanel.getSelectedId();
-    long artistId = artistsPanel.getSelectedId();
-    
     List<String> conditions = new ArrayList<String>();
-    if (albumId > 0) {
+    conditions.add(getSearchQuery());
+    
+    Long albumId = albumsPanel.getSelectedId();
+    if (albumId != null) {
       conditions.add(String.format("album_id = %d", albumId));
     }
-    if (artistId > 0) {
+    
+    Long artistId = artistsPanel.getSelectedId();
+    if (artistId != null) {
       conditions.add(String.format("artist_id = %d", artistId));
     }
+    
     loadSongs(Database.sqlize("AND", conditions));
   }
   
   public void artistSelected() {
-    long artistId = artistsPanel.getSelectedId();
-    String conditions = artistId > 0 ? String.format("artist_id = %d", artistId) : null;
+    List<String> conditions = new ArrayList<String>();
+    conditions.add(getSearchQuery());
+    
+    Long artistId = artistsPanel.getSelectedId();
+    if (artistId != null) {
+      conditions.add(String.format("(artist_id = %d)", artistId));
+    }
     
     try {
-      List<Long> albumsIds = songsManager.getAlbumsIds(conditions);
-      conditions = albumsIds.isEmpty() ? "FALSE" : 
-          String.format("id in (%s)", Database.sqlize(albumsIds));
-      loadAlbums(conditions);
+      List<Long> albumsIds = songsManager.getAlbumsIds(Database.sqlize("AND", conditions));
+      loadAlbumsAndSelect(albumsIds.isEmpty() ? 
+          "FALSE" : String.format("id in (%s)", Database.sqlize(albumsIds)), 
+          0);
     } catch (Database.Error e) {
       log.log(Level.WARNING, "", e);
       frame.exception(e);
     }
+  }
+  
+  public void songSelected() {
+    contentPanel.enableSongModificationButtons();
+  }
+  
+  public void songUnselected() {
+    contentPanel.disableSongModificationButtons();
+  }
+  
+  public ContentPanel getContentPanel() {
+    return contentPanel;
   }
 }

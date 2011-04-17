@@ -83,6 +83,15 @@ public class SongsManager extends ModelManager<Song> {
     return albumsIds;
   }
   
+  public List<Long> getArtistsIds(String conditions) throws Database.Error {
+    List<Song> artistSongs = find(conditions, null, null);
+    List<Long> artistsIds = new ArrayList<Long>();
+    for (Song s : artistSongs) {
+      artistsIds.add(s.artist.id);
+    }
+    return artistsIds;
+  }
+  
   public void save(Long id, Map<String, String> attrs) throws Database.Error, ValidationErrors {
     List<String> errors = new ArrayList<String>();
     
@@ -127,7 +136,6 @@ public class SongsManager extends ModelManager<Song> {
   
   @Override 
   public void create(Song song) throws Database.Error {
-    System.err.println("SongsManager#create");
     song.id = db.insert(
         "insert into songs (id, title, duration, track_number, file, artist_id, album_id) " +
         "values (null, ?, ?, ?, ?, ?, ?)", 
@@ -141,7 +149,6 @@ public class SongsManager extends ModelManager<Song> {
   
   @Override 
   public void update(Song song) throws Database.Error {
-    System.err.println("SongsManager#update");
     db.update("update songs set " +
     		"title = ?, duration = ?, track_number = ?, file = ?, artist_id = ?, album_id = ? " +
     		"where (id = ?)", 
