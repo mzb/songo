@@ -20,41 +20,48 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.AbstractListModel;
 import javax.swing.table.DefaultTableModel;
 
-import songo.Application;
+import songo.ApplicationController;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 
-public class ContentPanel extends JDesktopPane {
-  private JButton addButton;
-  private JButton editButton;
-  private JButton deleteButton;
-  private ArtistsPanel artistsPanel;
-  private AlbumsPanel albumsPanel;
-  private SongsPanel songsPanel;
+public class ContentPanel extends JDesktopPane implements ActionListener {
+  JButton addButton;
+  JButton editButton;
+  JButton deleteButton;
+  ArtistsPanel artistsPanel;
+  AlbumsPanel albumsPanel;
+  SongsPanel songsPanel;
+  final ApplicationController app;
 
-  public ContentPanel(final Application app) {
+  public ContentPanel(ApplicationController app) {
+    this.app = app;
+    load();
+  }
+
+  protected void load() {
     final Dimension size = new Dimension(800, 700); 
     setSize(size);
     setPreferredSize(size);
     setFocusable(true);
     
-    SearchPanel searchPanel = new SearchPanel();
+    SearchPanel searchPanel = new SearchPanel(app);
     
     JSplitPane collectionPanel = new JSplitPane();
     collectionPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
     collectionPanel.setResizeWeight(0.5);
     
     addButton = new JButton("+ Dodaj");
-    addButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        app.addSong();
-      }
-    });
+    addButton.addActionListener(this);
+    
     editButton = new JButton("Edytuj");
+    editButton.setEnabled(false);
+    editButton.addActionListener(this);
     
     deleteButton = new JButton("- Usuń");
+    deleteButton.addActionListener(this);
+    deleteButton.setEnabled(false);
     
     GroupLayout groupLayout = new GroupLayout(this);
     groupLayout.setHorizontalGroup(
@@ -101,7 +108,31 @@ public class ContentPanel extends JDesktopPane {
     collectionPanel.setRightComponent(songsPanel);
     
     setLayout(groupLayout);
-    
+  }
+  
+  public void actionPerformed(ActionEvent e) {
+    if (addButton == e.getSource()) {
+      app.addSong();
+      return;
+    }
+    if (editButton == e.getSource()) {
+      app.editSong();
+      return;
+    }
+    if (deleteButton == e.getSource()) {
+      app.deleteSong();
+      return;
+    }
+  }
+  
+  public void enableSongModificationButtons() {
+    editButton.setEnabled(true);
+    deleteButton.setEnabled(true);
+  }
+  
+  public void disableSongModificationButtons() {
+    editButton.setEnabled(false);
+    deleteButton.setEnabled(false);
   }
   
   public ArtistsPanel getArtistsPanel() {

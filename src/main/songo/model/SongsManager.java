@@ -1,7 +1,10 @@
 package songo.model;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -80,20 +83,51 @@ public class SongsManager extends ModelManager<Song> {
     return albumsIds;
   }
   
-  public void save(Map<String, String> attrs) throws Database.Error {
-    Song song = new Song(new File(attrs.get("file")));
-    song.title = attrs.get("title");
-    song.duration = Long.parseLong(attrs.get("duration"));
-    song.trackNumber = Integer.parseInt(attrs.get("trackNumber"));
+  public void save(Long id, Map<String, String> attrs) throws Database.Error, ValidationErrors {
+    List<String> errors = new ArrayList<String>();
     
-    song.artist = artistsManager.findOrCreateByName(attrs.get("artist"));
-    song.album = albumsManager.findOrCreateByTitle(attrs.get("album"));
+    if (attrs.get("file") == null || attrs.get("file").isEmpty()) {
+      errors.add("Nie wybrano pliku.");
+    }
+    Song song = new Song(new File(attrs.get("file")));
+    song.id = id;
+    song.title = attrs.get("title");
+    try {
+      song.trackNumber = Integer.parseInt(attrs.get("trackNumber"));
+    } catch (NumberFormatException e) {
+      errors.add("Numer nie jest liczbą");
+    }
+    
+    String[] duration = attrs.get("duration").split(":");
+    try {
+      if (duration.length == 2) {
+        int minutes = Integer.parseInt(duration[0]);
+        int seconds = Integer.parseInt(duration[1]);
+        song.duration = minutes * 60 + seconds;
+      } else {
+        throw new NumberFormatException();
+      }
+    } catch (NumberFormatException e) {
+      errors.add("Czas trwania powinien być w formacie hh:mm");
+    }
+    
+    if (!attrs.get("artist").isEmpty()) {
+      song.artist = artistsManager.findOrCreateByName(attrs.get("artist"));
+    }
+    if (!attrs.get("album").isEmpty()) {
+      song.album = albumsManager.findOrCreateByTitle(attrs.get("album"));
+    }
+    
+    if (!errors.isEmpty()) {
+      throw new ValidationErrors(errors);
+    }
     
     save(song);
   }
   
   @Override 
   public void create(Song song) throws Database.Error {
+    System.err.println("SongsManager#create");
     song.id = db.insert(
         "insert into songs (id, title, duration, track_number, file, artist_id, album_id) " +
         "values (null, ?, ?, ?, ?, ?, ?)", 
@@ -107,11 +141,27 @@ public class SongsManager extends ModelManager<Song> {
   
   @Override 
   public void update(Song song) throws Database.Error {
-    
+    System.err.println("SongsManager#update");
+    db.update("update songs set " +
+    		"title = ?, duration = ?, track_number = ?, file = ?, artist_id = ?, album_id = ? " +
+    		"where (id = ?)", 
+    		song.title, 
+    		song.duration,
+    		song.trackNumber,
+    		song.file.getAbsolutePath(),
+    		song.getArtistId(), 
+    		song.getAlbumId(), 
+    		song.id);
   }
   
-  public void delete(Song song) {
-    
+  @Override
+  protected void validate(Song song) throws ValidationErrors {
+    List<String> errors = new ArrayList<String>();
+    if (song.file == null || song.file.getName().isEmpty()) {
+      errors.add("Nie wybrano pliku");
+    }
+    if (!errors.isEmpty()) {
+      throw new ValidationErrors(errors);
+    }
   }
-
 }

@@ -6,11 +6,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import songo.Application;
+import songo.ApplicationController;
 import songo.model.Artist;
 
 public class ArtistsPanel extends ListPanel {
-  public ArtistsPanel(final Application app) {
+  public ArtistsPanel(final ApplicationController app) {
     super(app);
   }
   

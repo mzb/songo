@@ -11,12 +11,24 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-public class SearchPanel extends JPanel {
+import songo.ApplicationController;
+
+public class SearchPanel extends JPanel implements ActionListener {
   JTextField queryField;
   JCheckBox chckbxArtists, chckbxAlbums, chckbxSongs;
   JButton clearButton;
+  final ApplicationController app;
   
-  public SearchPanel() {
+  public SearchPanel(ApplicationController app) {
+    this.app = app;
+    load();
+  }
+  
+  public void actionPerformed(ActionEvent e) {
+    
+  }
+  
+  private void load() {
     queryField = new JTextField();
     queryField.setToolTipText("Szukaj");
     queryField.setColumns(10);
@@ -26,10 +38,7 @@ public class SearchPanel extends JPanel {
     chckbxSongs = new JCheckBox("Utwory");
     
     clearButton = new JButton("Wyczyść");
-    clearButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent arg0) {
-      }
-    });
+    clearButton.addActionListener(this);
     
     GroupLayout layout = new GroupLayout(this);
     layout.setHorizontalGroup(
@@ -56,5 +65,4 @@ public class SearchPanel extends JPanel {
     );
     setLayout(layout);
   }
-  
 }

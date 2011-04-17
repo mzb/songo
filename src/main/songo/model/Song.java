@@ -29,11 +29,11 @@ public class Song extends Model {
     return album != null ? album.title : "";
   }
   
-  public long getArtistId() {
+  public Long getArtistId() {
     return artist != null ? artist.id : null;
   }
   
-  public long getAlbumId() {
+  public Long getAlbumId() {
     return album != null ? album.id : null;
   }
   

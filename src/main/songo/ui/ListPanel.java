@@ -12,16 +12,16 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import songo.Application;
+import songo.ApplicationController;
 
-public class ListPanel extends JScrollPane {
-  protected Application app;
+public class ListPanel extends JScrollPane implements ListSelectionListener {
+  protected ApplicationController app;
   protected JList list;
   protected DefaultListModel listModel;
   
   protected List<Long> rowsIds = new ArrayList<Long>();
   
-  public ListPanel(final Application app) {
+  public ListPanel(final ApplicationController app) {
     this.app = app;
     
     setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -32,19 +32,7 @@ public class ListPanel extends JScrollPane {
     
     setViewportView(list);
     
-    list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        if (e.getValueIsAdjusting()) return;
-        SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-            onSelected();
-          }
-        });
-      }
-    });
-  }
-  
-  protected void onSelected() {
+    list.getSelectionModel().addListSelectionListener(this);
   }
   
   public void clear() {
@@ -57,7 +45,20 @@ public class ListPanel extends JScrollPane {
     list.setSelectedIndex(index);
   }
   
-  public long getSelectedId() {
+  public Long getSelectedId() {
+    System.err.println(rowsIds);
     return rowsIds.get(list.getSelectedIndex());
+  }
+  
+  public void valueChanged(ListSelectionEvent e) {
+    if (e.getValueIsAdjusting()) return;
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        onSelected();
+      }
+    });
+  }
+  
+  protected void onSelected() {
   }
 }

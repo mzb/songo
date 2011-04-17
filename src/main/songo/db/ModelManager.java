@@ -2,6 +2,7 @@ package songo.db;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class ModelManager<M extends Model> {
 
@@ -44,6 +45,15 @@ public abstract class ModelManager<M extends Model> {
     return models;
   }
   
+  public M findFirst(String conditions, String order) throws Database.Error {
+    List<M> results = find(conditions, order, "1");
+    return results.get(0);
+  }
+  
+  public M findById(Long id) throws Database.Error {
+    return findFirst(String.format(getTableName() + ".id = %d", id), null);
+  }
+  
   public long count(String conditions) throws Database.Error {
     String query = "select count(*) as models_count from " + getTableName();
     if (conditions != null && !conditions.isEmpty()) {
@@ -70,11 +80,37 @@ public abstract class ModelManager<M extends Model> {
     return model;
   }
   
-  public void save(M  model) throws Database.Error {
-    if (model.id > 0) {
+  public void save(M  model) throws Database.Error, ValidationErrors {
+    validate(model);
+    if (model.id != null) {
       update(model);
     } else {
       create(model);
     }
   }
+  
+  public void delete(String conditions) throws Database.Error {
+    db.update(String.format("delete from %s where (%s)", getTableName(), conditions));
+  }
+  
+  public void delete(M model) throws Database.Error {
+    delete(String.format("id = %d", model.id));
+  }
+  
+  protected void validate(M model) throws ValidationErrors {
+    
+  }
+  
+  public static class ValidationErrors extends Throwable {
+    protected List<String> errors;
+    
+    public ValidationErrors(List<String> errors) {
+      this.errors = errors;
+    }
+    
+    public List<String> getErrors() {
+      return errors;
+    }
+  }
+
 }

@@ -6,11 +6,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import songo.Application;
+import songo.ApplicationController;
 import songo.model.Album;
 
 public class AlbumsPanel extends ListPanel {
-  public AlbumsPanel(final Application app) {
+  public AlbumsPanel(final ApplicationController app) {
     super(app);
   }
   
@@ -20,13 +20,10 @@ public class AlbumsPanel extends ListPanel {
   }
   
   public void setData(List<Album> albums) {
-    System.err.println("AlbumsPanel#setData");
     clear();
-    System.err.println("albums = " + albums);
     for (Album a : albums) {
       listModel.addElement(a.title);
       rowsIds.add(a.id);
     }
-    System.err.println("AlbumsPanel#setData READY");
   }
 }
