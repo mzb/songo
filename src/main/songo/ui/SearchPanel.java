@@ -77,8 +77,9 @@ public class SearchPanel extends JPanel implements ActionListener, ItemListener,
   public void keyReleased(KeyEvent e) {}
 
   @Override
+  // Instant search
   public void keyTyped(KeyEvent e) {
-    // TODO: Instant search
+    runSearch();
   }
   
   public String getQueryString() {
