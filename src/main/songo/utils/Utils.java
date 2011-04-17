@@ -1,6 +1,7 @@
 package songo.utils;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
@@ -21,5 +22,10 @@ public class Utils {
   
   public static String join(List<? extends Object> list) {
     return join(list, ", ");
+  }
+
+  public static String toTime(long seconds) {
+    long minutes = TimeUnit.SECONDS.toMinutes(seconds);
+    return String.format("%02d:%02d", minutes, seconds - TimeUnit.MINUTES.toSeconds(minutes));
   }
 }

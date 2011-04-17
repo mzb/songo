@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.JButton;
 import javax.swing.UIManager;
+
+import org.farng.mp3.MP3File;
+import org.farng.mp3.TagException;
 
 import songo.ApplicationController;
 import songo.model.Song;
@@ -66,12 +70,21 @@ public class EditSongPanel extends JInternalFrame implements ActionListener {
   
   public void setData(Song song) {
     this.song = song;
+    fileField.setText(song.file.getAbsolutePath());
     titleField.setText(song.title);
     artistField.setText(song.artist.name);
     albumField.setText(song.album.title);
     trackNumberField.setText(String.valueOf(song.trackNumber));
     durationField.setText(song.getFormattedDuration());
-    fileField.setText(song.file.getAbsolutePath());
+  }
+  
+  public void setData(Map<String, Object> data) {
+    fileField.setText(String.valueOf(data.get("file")));
+    titleField.setText(String.valueOf(data.get("title")));
+    artistField.setText(String.valueOf(data.get("artist")));
+    albumField.setText(String.valueOf(data.get("album")));
+    trackNumberField.setText(String.valueOf(data.get("track_number")));
+    durationField.setText(String.valueOf(data.get("duration")));
   }
   
   public void actionPerformed(ActionEvent e) {
@@ -96,11 +109,12 @@ public class EditSongPanel extends JInternalFrame implements ActionListener {
       int returnVal = fc.showOpenDialog(EditSongPanel.this);
       if (returnVal == JFileChooser.APPROVE_OPTION) {
         File file = fc.getSelectedFile();
-        fileField.setText(file.getAbsolutePath());
+        Map<String, Object> data = app.importSongDataFromIdTags(file);
+        setData(data);
       }
     }
   }
-  
+
   protected void load() {
     setBorder(UIManager.getBorder("InternalFrame.paletteBorder"));
     setResizable(false);

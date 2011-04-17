@@ -16,7 +16,7 @@ public class AlbumsPanel extends ListPanel {
   
   @Override
   protected void onSelected() {
-    app.albumSelected();
+    app.onAlbumSelected();
   }
   
   public void setData(List<Album> albums) {

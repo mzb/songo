@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import songo.db.Model;
+import songo.utils.Utils;
 
 public class Song extends Model {
   public String title;
@@ -38,7 +39,6 @@ public class Song extends Model {
   }
   
   public String getFormattedDuration() {
-    long minutes = TimeUnit.SECONDS.toMinutes(duration);
-    return String.format("%02d:%02d", minutes, duration - TimeUnit.MINUTES.toSeconds(minutes));
+    return Utils.toTime(duration);
   }
 }

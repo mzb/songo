@@ -16,7 +16,7 @@ public class ArtistsPanel extends ListPanel {
   
   @Override
   protected void onSelected() {
-    app.artistSelected();
+    app.onArtistSelected();
   }
   
   public void setData(List<Artist> artists) {

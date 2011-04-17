@@ -92,9 +92,9 @@ public class SongsPanel extends JScrollPane implements ListSelectionListener {
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         if (list.getSelectedRowCount() == 0) {
-          app.noSongSelected();
+          app.onNoSongSelected();
         } else {
-          app.songsSelected(list.getSelectedRowCount());
+          app.onSongsSelected(list.getSelectedRowCount());
         }
       }
     });

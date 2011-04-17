@@ -4,12 +4,19 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.filechooser.FileFilter;
+
+import org.farng.mp3.MP3File;
+import org.farng.mp3.id3.AbstractID3v2;
+import org.farng.mp3.id3.FrameBodyTLEN;
+import org.farng.mp3.id3.FrameBodyTRCK;
+import org.farng.mp3.id3.ID3v2_4;
 
 import songo.db.Database;
 import songo.db.Database.Error;
@@ -259,7 +266,7 @@ public class ApplicationController {
     return fileFilter;
   }
 
-  public void albumSelected() {
+  public void onAlbumSelected() {
     List<String> conditions = new ArrayList<String>();
     conditions.add(getSearchQuery());
     
@@ -276,7 +283,7 @@ public class ApplicationController {
     loadSongs(Database.sqlize("AND", conditions));
   }
   
-  public void artistSelected() {
+  public void onArtistSelected() {
     List<String> conditions = new ArrayList<String>();
     conditions.add(getSearchQuery());
     
@@ -296,7 +303,7 @@ public class ApplicationController {
     }
   }
   
-  public void songsSelected(int number) {
+  public void onSongsSelected(int number) {
     contentPanel.enableDeleteSongButton();
     if (number == 1) {
       contentPanel.enableEditSongButton();
@@ -305,11 +312,35 @@ public class ApplicationController {
     }
   }
   
-  public void noSongSelected() {
+  public void onNoSongSelected() {
     contentPanel.disableSongModificationButtons();
   }
   
   public ContentPanel getContentPanel() {
     return contentPanel;
+  }
+
+  public Map<String, Object> importSongDataFromIdTags(File file) {
+    Map<String, Object> data = new HashMap<String, Object>();
+    try {
+      MP3File mp3 = new MP3File(file);
+      AbstractID3v2 tag = mp3.getID3v2Tag();
+      data.put("file", file.getAbsolutePath());
+      data.put("title", tag.getSongTitle());
+      data.put("album", tag.getAlbumTitle());
+      data.put("artist", tag.getLeadArtist());
+      data.put("track_number", tag.getTrackNumberOnAlbum().split("/")[0]);
+      String duration = "";
+      try {
+        duration = ((FrameBodyTLEN)tag.getFrame("TLEN").getBody()).getText();
+        duration = duration != null ? Utils.toTime(Integer.parseInt(duration) / 1000) : "";
+      } catch (Exception e) {
+        log.log(Level.INFO, "", e);
+      }
+      data.put("duration", duration);
+    } catch (Exception e) {
+      log.log(Level.WARNING, "Unable to import song data from id tags", e);
+    }
+    return data;
   }
 }
