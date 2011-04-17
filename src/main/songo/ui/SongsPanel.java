@@ -74,7 +74,16 @@ public class SongsPanel extends JScrollPane implements ListSelectionListener {
   }
   
   public Long getSelectedId() {
-    return rowsIds.get(list.getSelectedRow());
+    int selectedRow = list.getSelectedRow();
+    return selectedRow > -1 ? rowsIds.get(selectedRow) : null;
+  }
+  
+  public List<Long> getSelectedIds() {
+    List<Long> selectedIds = new ArrayList<Long>();
+    for (int idx : list.getSelectedRows()) {
+      selectedIds.add(rowsIds.get(idx));
+    }
+    return selectedIds;
   }
 
   @Override
@@ -82,10 +91,10 @@ public class SongsPanel extends JScrollPane implements ListSelectionListener {
     if (e.getValueIsAdjusting()) return;
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
-        if (list.getSelectedRow() == -1) {
-          app.songUnselected();
+        if (list.getSelectedRowCount() == 0) {
+          app.noSongSelected();
         } else {
-          app.songSelected();
+          app.songsSelected(list.getSelectedRowCount());
         }
       }
     });

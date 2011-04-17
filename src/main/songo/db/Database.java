@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import songo.utils.Utils;
+
 public class Database {
   Properties config;
   Connection connection;
@@ -143,14 +145,7 @@ public class Database {
   
   
   public static String sqlize(String operator, List<? extends Object> conditions) {
-    StringBuilder sql = new StringBuilder();
-    for (int i = 0; i < conditions.size(); i++) {
-      sql.append(conditions.get(i));
-      if (i < conditions.size()-1) {
-        sql.append(" " + operator + " ");
-      }
-    }
-    return sql.toString();
+    return Utils.join(conditions, " " + operator + " ");
   }
   
   public static String sqlize(List<Long> ids) {

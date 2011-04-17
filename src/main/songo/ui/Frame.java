@@ -10,6 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import songo.utils.Utils;
+
 public class Frame extends JFrame {
   public Frame(final String title, final Container content, final WindowListener listener) {
     SwingUtilities.invokeLater(new Runnable() {
@@ -40,11 +42,7 @@ public class Frame extends JFrame {
   }
   
   public void error(String title, List<String> msgs) {
-    StringBuilder message = new StringBuilder();
-    for (String msg : msgs) {
-      message.append("* ").append(msg).append("\n");
-    }
-    error(title, message.toString());
+    error(title, Utils.join(msgs, "\n", "* "));
   }
   
   public void exception(Throwable e) {

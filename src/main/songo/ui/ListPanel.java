@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -29,6 +30,7 @@ public class ListPanel extends JScrollPane implements ListSelectionListener {
     
     listModel = new DefaultListModel();
     list = new JList(listModel);
+    list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     
     setViewportView(list);
     
@@ -46,7 +48,8 @@ public class ListPanel extends JScrollPane implements ListSelectionListener {
   }
   
   public Long getSelectedId() {
-    return rowsIds.get(list.getSelectedIndex());
+    int selectedIndex = list.getSelectedIndex();
+    return selectedIndex > -1 ? rowsIds.get(selectedIndex) : null;
   }
   
   public void valueChanged(ListSelectionEvent e) {

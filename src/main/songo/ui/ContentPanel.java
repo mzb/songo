@@ -151,4 +151,16 @@ public class ContentPanel extends JDesktopPane implements ActionListener {
   public SearchPanel getSearchPanel() {
     return searchPanel;
   }
+
+  public void enableDeleteSongButton() {
+    deleteButton.setEnabled(true);
+  }
+  
+  public void disableEditSongButton() {
+    editButton.setEnabled(false);
+  }
+
+  public void enableEditSongButton() {
+    editButton.setEnabled(true);
+  }
 }

@@ -27,6 +27,7 @@ import songo.ui.ContentPanel;
 import songo.ui.Frame;
 import songo.ui.SearchPanel;
 import songo.ui.SongsPanel;
+import songo.utils.Utils;
 
 public class ApplicationController {
   static final Logger log = Logger.getLogger("Application");
@@ -166,14 +167,19 @@ public class ApplicationController {
   }
   
   public void deleteSong() {
-    Long songId = songsPanel.getSelectedId();
+    List<Long> selectedIds = songsPanel.getSelectedIds();
     try {
-      Song song = songsManager.findById(songId);
-      boolean confirmed = frame.confirmation("Usuwanie utworu", 
-          "Czy na pewno chcesz usunąć utwór\n%s?", 
-          "Tak, usuń", "Nie usuwaj", song.title);
+      String idsCondition = String.format("songs.id in (%s)", Database.sqlize(selectedIds));
+      List<Song> songs = songsManager.find(idsCondition, null, null);
+      List<String> titles = new ArrayList<String>();
+      for (Song s : songs) {
+        titles.add(String.format("%s (%s)", s.title, s.getArtistName()));
+      }
+      boolean confirmed = frame.confirmation("Usuwanie utworów", 
+          "Czy na pewno chcesz usunąć zaznaczone utwory:\n%s ?", 
+          "Tak, usuń", "Nie usuwaj", Utils.join(titles, "\n", "* "));
       if (confirmed) {
-        songsManager.delete(song);
+        songsManager.delete(idsCondition);
         search();
       }
     } catch (Database.Error e) {
@@ -290,11 +296,16 @@ public class ApplicationController {
     }
   }
   
-  public void songSelected() {
-    contentPanel.enableSongModificationButtons();
+  public void songsSelected(int number) {
+    contentPanel.enableDeleteSongButton();
+    if (number == 1) {
+      contentPanel.enableEditSongButton();
+    } else {
+      contentPanel.disableEditSongButton();
+    }
   }
   
-  public void songUnselected() {
+  public void noSongSelected() {
     contentPanel.disableSongModificationButtons();
   }
   
