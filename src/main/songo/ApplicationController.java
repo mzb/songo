@@ -331,15 +331,12 @@ public class ApplicationController {
       data.put("artist", tag.getLeadArtist());
       data.put("track_number", tag.getTrackNumberOnAlbum().split("/")[0]);
       String duration = "";
-      try {
-        duration = ((FrameBodyTLEN)tag.getFrame("TLEN").getBody()).getText();
-        duration = duration != null ? Utils.toTime(Integer.parseInt(duration) / 1000) : "";
-      } catch (Exception e) {
-        log.log(Level.INFO, "", e);
-      }
+      // FIXME(mateusz): Czas trwania utworu nie zawsze jest dostepny w ten sposob
+      duration = ((FrameBodyTLEN)tag.getFrame("TLEN").getBody()).getText();
+      duration = duration != null ? Utils.toTime(Integer.parseInt(duration) / 1000) : "";
       data.put("duration", duration);
     } catch (Exception e) {
-      log.log(Level.WARNING, "Unable to import song data from id tags", e);
+      log.log(Level.WARNING, "Unable to import song data from id tags: " + e);
     }
     return data;
   }
