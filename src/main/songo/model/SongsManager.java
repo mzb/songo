@@ -12,10 +12,19 @@ import songo.db.Database;
 import songo.db.ModelManager;
 import songo.db.QueryResults;
 
+/**
+ * Klasa do zarządzania utworami w ramach kolekcji.
+ * @see ModelManager
+ */
 public class SongsManager extends ModelManager<Song> {
   ArtistsManager artistsManager;
   AlbumsManager albumsManager;
   
+  /**
+   * {@inheritDoc}
+   * @param artistsManager menedżer wykonawców
+   * @param albumsManager menedżer albumów
+   */
   public SongsManager(Database db, ArtistsManager artistsManager, AlbumsManager albumsManager) {
     super(db);
     this.artistsManager = artistsManager;
@@ -46,6 +55,11 @@ public class SongsManager extends ModelManager<Song> {
     return new Song(new File(file));
   }
   
+  /**
+   * {@inheritDoc}
+   * Wyszukiwanie wykonywane jest na złączeniu tabeli utworów, wykonwaców i albumów,
+   * więc w warunkach wyszukiwania można podawać warunki obejmujące kolumny tych tabel.
+   */
   @Override
   public List<Song> find(String conditions, String order, String limit) throws Database.Error {
     String query = "select songs.*, artists.name as artist_name, albums.title as album_title " +
@@ -74,6 +88,14 @@ public class SongsManager extends ModelManager<Song> {
     return songs;
   }
   
+  /**
+   * Zwraca ID albumów spełniających podane kryteria.
+   * Metoda znajduje się tutaj, ponieważ albumy kojarzone są z utworami przez odniesienie
+   * z poziomu pojedyńczego utworu (song.album.id)
+   * @param conditions warunki wyszukiwania
+   * @return lista ID
+   * @throws Database.Error
+   */
   public List<Long> getAlbumsIds(String conditions) throws Database.Error {
     List<Song> artistSongs = find(conditions, null, null);
     List<Long> albumsIds = new ArrayList<Long>();
@@ -83,6 +105,14 @@ public class SongsManager extends ModelManager<Song> {
     return albumsIds;
   }
   
+  /**
+   * Zwraca ID wykonawców spełniających podane kryteria.
+   * Metoda znajduje się tutaj, ponieważ wykonawcy kojarzeni są z utworami przez odniesienie
+   * z poziomu pojedyńczego utworu (song.artist.id)
+   * @param conditions warunki wyszukiwania
+   * @return lista ID
+   * @throws Database.Error
+   */
   public List<Long> getArtistsIds(String conditions) throws Database.Error {
     List<Song> artistSongs = find(conditions, null, null);
     List<Long> artistsIds = new ArrayList<Long>();
@@ -92,6 +122,13 @@ public class SongsManager extends ModelManager<Song> {
     return artistsIds;
   }
   
+  /**
+   * Zapisuje metadane utworu o podanym ID, po wykonaniu walidacji.
+   * @param id ID utworu do zapisania
+   * @param attrs metadane
+   * @throws Database.Error
+   * @throws ValidationErrors
+   */
   public void save(Long id, Map<String, String> attrs) throws Database.Error, ValidationErrors {
     List<String> errors = new ArrayList<String>();
     

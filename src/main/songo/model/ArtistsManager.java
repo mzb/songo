@@ -4,6 +4,10 @@ import songo.db.Database;
 import songo.db.ModelManager;
 import songo.db.QueryResults;
 
+/**
+ * Klasa do zarządzania wykonawcami.
+ * @see ModelManager
+ */
 public class ArtistsManager extends ModelManager<Artist> {
   public ArtistsManager(Database db) {
     super(db);

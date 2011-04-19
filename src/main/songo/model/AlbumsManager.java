@@ -5,6 +5,10 @@ import songo.db.Database.Error;
 import songo.db.ModelManager;
 import songo.db.QueryResults;
 
+/**
+ * Klasa zarządzająca albumami w kolekcji.
+ * @see ModelManager
+ */
 public class AlbumsManager extends ModelManager<Album> {
 
   public AlbumsManager(Database db) {

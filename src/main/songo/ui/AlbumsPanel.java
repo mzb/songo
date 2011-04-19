@@ -9,6 +9,10 @@ import javax.swing.event.ListSelectionListener;
 import songo.ApplicationController;
 import songo.model.Album;
 
+/**
+ * Panel zawierający listę albumów.
+ * @see ListPanel
+ */
 public class AlbumsPanel extends ListPanel {
   public AlbumsPanel(final ApplicationController app) {
     super(app);

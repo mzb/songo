@@ -2,7 +2,11 @@ package songo.model;
 
 import songo.db.Model;
 
+/**
+ * Klasa reprezentująca pojedyńczego wykonawcę w kolekcji.
+ */
 public class Artist extends Model {
+  /** Nazwa */
   public String name;
   
  public Artist(String name) {
@@ -10,10 +14,6 @@ public class Artist extends Model {
  }
  
  public String toString() {
-   StringBuilder sb = new StringBuilder("<Artist ");
-   sb.append(" id=").append(this.id).
-      append(" name=").append(this.name).
-      append(">");
-   return sb.toString();
+   return name;
  }
 }

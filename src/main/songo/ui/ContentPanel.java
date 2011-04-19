@@ -26,6 +26,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 
+/**
+ * Główny panel aplikacji. Definiuje layout poszczególnych paneli.
+ */
 public class ContentPanel extends JDesktopPane implements ActionListener {
   JButton addButton;
   JButton editButton;
@@ -36,6 +39,10 @@ public class ContentPanel extends JDesktopPane implements ActionListener {
   SearchPanel searchPanel;
   final ApplicationController app;
 
+  /**
+   * Konstruktor.
+   * @param app Kontroler aplikacji
+   */
   public ContentPanel(ApplicationController app) {
     this.app = app;
     load();
@@ -126,40 +133,67 @@ public class ContentPanel extends JDesktopPane implements ActionListener {
     }
   }
   
+  /**
+   * Aktywuje przyciski modyfikujące utwory (Edytuj, Usuń)
+   */
   public void enableSongModificationButtons() {
     editButton.setEnabled(true);
     deleteButton.setEnabled(true);
   }
   
+  /**
+   * Deaktywuje przyciski Edytuj i Usuń
+   */
   public void disableSongModificationButtons() {
     editButton.setEnabled(false);
     deleteButton.setEnabled(false);
   }
   
+  /**
+   * @return panel wykonawców
+   */
   public ArtistsPanel getArtistsPanel() {
     return artistsPanel;
   }
   
+  /**
+   * @return panel albumów
+   */
   public AlbumsPanel getAlbumsPanel() {
     return albumsPanel;
   }
   
+  /**
+   * @return panel utworów
+   */
   public SongsPanel getSongsPanel() {
     return songsPanel;
   }
   
+  /**
+   * @return panel wyszukiwania
+   */
   public SearchPanel getSearchPanel() {
     return searchPanel;
   }
 
+  /**
+   * Aktywuje przycisk Usuń
+   */
   public void enableDeleteSongButton() {
     deleteButton.setEnabled(true);
   }
   
+  /**
+   * Deaktywuje przycisk Usuń
+   */
   public void disableEditSongButton() {
     editButton.setEnabled(false);
   }
 
+  /**
+   * Aktywuje przycisk Edytuj
+   */
   public void enableEditSongButton() {
     editButton.setEnabled(true);
   }

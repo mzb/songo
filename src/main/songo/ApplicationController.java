@@ -36,9 +36,12 @@ import songo.ui.SearchPanel;
 import songo.ui.SongsPanel;
 import songo.utils.Utils;
 
+/**
+ * Klasa reprezentująca kontroler aplikacji.
+ * Odpowiada za sterowaniem przepływem logiki między poszczególnymi funkcjonalnościami.
+ */
 public class ApplicationController {
   static final Logger log = Logger.getLogger("Application");
-  // TODO: => Arg wywolania
   static final String CONFIG_FILE = "config/test.properties";
   
   Database database;
@@ -55,6 +58,10 @@ public class ApplicationController {
   SearchPanel searchPanel;
   Frame frame;
   
+  /**
+   * Konstruktor.
+   * @param args argumenty wywołania
+   */
   public ApplicationController(String[] args) {
     log.info("Starting");
     
@@ -98,6 +105,11 @@ public class ApplicationController {
     });
   }
   
+  /**
+   * Ładuje listę wykonawców spełniajacych podane warunki oraz zaznacza wiersz o podanym numerze.
+   * @param conditions fragment SQL
+   * @param index numer wiersza (licząc od 0), który ma zostać zaznaczony
+   */
   public void loadArtistsAndSelect(String conditions, int index) {
     loadArtists(conditions);
     artistsPanel.select(0);
@@ -116,6 +128,11 @@ public class ApplicationController {
     artistsPanel.setData(artists);
   }
   
+  /**
+   * Ładuje listę albumów spełniających podane kryteria oraz zaznacza podany wiersz.
+   * @param conditions fragment SQL
+   * @param index numer wiersza (licząc od 0), który ma zostać zaznaczony
+   */
   public void loadAlbumsAndSelect(String conditions, int index) {
     loadAlbums(conditions);
     albumsPanel.select(0);
@@ -134,6 +151,10 @@ public class ApplicationController {
     albumsPanel.setData(albums);
   }
   
+  /**
+   * Ładuje listę utworów spełniających podane kryteria.
+   * @param conditions fragment SQL
+   */
   public void loadSongs(String conditions) {
     try {
       List<Song> songs = songsManager.find(conditions, 
@@ -160,6 +181,11 @@ public class ApplicationController {
     }
   }
   
+  /**
+   * Zapisuje metadane utworu o podanym ID.
+   * @param id ID utworu, którego metadane mają zostać zapisane.
+   * @param attrs metadane, które mają zostać zapisane.
+   */
   public void saveSong(Long id, Map<String, String> attrs) {
     try {
       songsManager.save(id, attrs);
@@ -173,6 +199,9 @@ public class ApplicationController {
     }
   }
   
+  /**
+   * Usuwa utwory zaznaczone w panelu utworów.
+   */
   public void deleteSong() {
     List<Long> selectedIds = songsPanel.getSelectedIds();
     try {
@@ -195,6 +224,13 @@ public class ApplicationController {
     }
   }
   
+  /**
+   * Wyszukuje wykonawców, których nazwa zawiera ciąg znaków wprowadzony w polu wyszukiwania.
+   * Następnie zaznacza pierwszego wykonawcę na liście, co powoduje wyszukanie i zaznaczenie 
+   * odpowiednich albumów, a to z kolei wyszukanie i załadowanie odpowiednich utworów.
+   * @see ApplicationController#onArtistSelected()
+   * @see ApplicationController#onAlbumSelected()
+   */
   public void search() {
     try {
       String searchQuery = getSearchQuery();
@@ -223,6 +259,9 @@ public class ApplicationController {
     return conditions.isEmpty() ? null : "(" + Database.sqlize("OR", conditions) + ")";
   }
   
+  /**
+   * Zamyka aplikację.
+   */
   public void close() {
     log.info("closing");
     if (database != null) {
@@ -247,6 +286,11 @@ public class ApplicationController {
     }
   }
 
+  /**
+   * Zwraca filtr plików mowidocznych w panelu wyboru pliku przy edycji metadanych utworu.
+   * @return filtr plików.
+   * @see EditSongPanel
+   */
   public FileFilter getFileFilter() {
     if (fileFilter == null) {
       fileFilter = new FileFilter() {
@@ -266,6 +310,10 @@ public class ApplicationController {
     return fileFilter;
   }
 
+  /**
+   * Metoda wywoływana po zaznaczeniu na liście albumów jakiegoś albumu.
+   * Powoduje załadowanie odpowiedniej listy utworów.
+   */
   public void onAlbumSelected() {
     List<String> conditions = new ArrayList<String>();
     conditions.add(getSearchQuery());
@@ -283,6 +331,10 @@ public class ApplicationController {
     loadSongs(Database.sqlize("AND", conditions));
   }
   
+  /**
+   * Metoda wywoływana po zaznaczeniu na liście wykonawców jakiegoś wykonawcy.
+   * Powoduje załadowanie odpowiedniej listy albumów.
+   */
   public void onArtistSelected() {
     List<String> conditions = new ArrayList<String>();
     conditions.add(getSearchQuery());
@@ -303,6 +355,11 @@ public class ApplicationController {
     }
   }
   
+  /**
+   * Metoda wywoływana po zaznaczeniu na liście utworów jakiegoś utworu.
+   * @param number ilość zaznaczonych utworów - od niej uzależniona jest aktywność przycisków
+   * Edytuj i Usuń.
+   */
   public void onSongsSelected(int number) {
     contentPanel.enableDeleteSongButton();
     if (number == 1) {
@@ -312,14 +369,27 @@ public class ApplicationController {
     }
   }
   
+  /**
+   * Metoda wywoływana kiedy na liście utworów nie jest wybrany żaden utwór.
+   * Deaktywuje przyciski pozwalające modyfikować/usuwać utwory.
+   */
   public void onNoSongSelected() {
     contentPanel.disableSongModificationButtons();
   }
   
+  /**
+   * Zwraca główny panel aplikacji.
+   * @return główny panel aplikacji.
+   */
   public ContentPanel getContentPanel() {
     return contentPanel;
   }
 
+  /**
+   * Importuje metadane zawarte w tagach ID3 podanego pliku.
+   * @param file plik, z którego mają być zaimportowane metadane.
+   * @return odczytane metadane
+   */
   public Map<String, Object> importSongDataFromIdTags(File file) {
     Map<String, Object> data = new HashMap<String, Object>();
     try {

@@ -3,6 +3,10 @@ package songo.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Reprezentuje wyniki zapytania do bazy.
+ * Prosty wrapper dla {@link java.sql.ResultSet}.
+ */
 public class QueryResults {
   ResultSet rs;
   

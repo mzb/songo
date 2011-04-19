@@ -1,15 +1,13 @@
 package songo.model;
 
-import java.util.Date;
-import java.util.List;
-
 import songo.db.Model;
 
+/**
+ * Model reprezentujący pojedyńczy album w kolekcji.
+ */
 public class Album extends Model {
+  /** Tytuł */
   public String title;
-  public Date releaseDate;
-  public List<Artist> artists;
-  public List<Song> songs;
   
   public Album(String title) {
     this.title = title;

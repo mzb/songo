@@ -19,17 +19,26 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import songo.ApplicationController;
 
+/**
+ * Panel wyszukiwania.
+ */
 public class SearchPanel extends JPanel implements ActionListener, ItemListener, KeyListener {
   JTextField queryField;
   JCheckBox artistsCheckbox, albumsCheckbox, songsCheckbox;
   JButton clearButton;
   final ApplicationController app;
   
+  /**
+   * @param app konotroler aplikacji
+   */
   public SearchPanel(ApplicationController app) {
     this.app = app;
     load();
   }
   
+  /**
+   * {@inheritDoc}
+   */
   public void actionPerformed(ActionEvent e) {
     if (clearButton == e.getSource()) {
       queryField.setText("");
@@ -41,6 +50,9 @@ public class SearchPanel extends JPanel implements ActionListener, ItemListener,
     app.search();
   }
   
+  /**
+   * {@inheritDoc}
+   */
   public void itemStateChanged(ItemEvent e) {
     Object checkbox = e.getItemSelectable();
     
@@ -58,6 +70,9 @@ public class SearchPanel extends JPanel implements ActionListener, ItemListener,
     }
   }
   
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void keyPressed(KeyEvent e) {
     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -65,6 +80,11 @@ public class SearchPanel extends JPanel implements ActionListener, ItemListener,
     }
   }
 
+  /**
+   * @return Zakres wyszukiwania odpowiadający danemu checkboxowi - 
+   * jeśli chcekcbox jest zaznaczony, to odpowiedni wpis będzie miał wartość true,
+   * w przeciwnym razie false.
+   */
   public Map<String, Boolean> getScope() {
     Map<String, Boolean> scope = new HashMap<String, Boolean>();
     scope.put("artists", artistsCheckbox.isSelected());
@@ -73,15 +93,24 @@ public class SearchPanel extends JPanel implements ActionListener, ItemListener,
     return scope;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void keyReleased(KeyEvent e) {}
 
+  /**
+   * {@inheritDoc}
+   * Wykorzystywane do tzw Instant search.
+   */
   @Override
-  // Instant search
   public void keyTyped(KeyEvent e) {
     runSearch();
   }
   
+  /**
+   * @return cią znaków prowadzony w polu wyszukiwania
+   */
   public String getQueryString() {
     return queryField.getText();
   }

@@ -15,6 +15,9 @@ import javax.swing.table.DefaultTableModel;
 import songo.ApplicationController;
 import songo.model.Song;
 
+/**
+ * Panel zawierający listę utworów.
+ */
 public class SongsPanel extends JScrollPane implements ListSelectionListener {
   static final String[] COLUMNS = new String[] { "#", "Tytuł", "Wykonawca", "Album", "Czas" };
   
@@ -23,6 +26,9 @@ public class SongsPanel extends JScrollPane implements ListSelectionListener {
   DefaultTableModel listModel;
   List<Long> rowsIds  = new ArrayList<Long>();
 
+  /**
+   * @param app kontroler aplikacji
+   */
   public SongsPanel(final ApplicationController app) {
     this.app = app;
     
@@ -59,6 +65,10 @@ public class SongsPanel extends JScrollPane implements ListSelectionListener {
     list.getSelectionModel().addListSelectionListener(this);
   }
   
+  /**
+   * Wypełnia listę podanymi utworami.
+   * @param songs lista utworów
+   */
   public void setData(List<Song> songs) {
     clear();
     for (Song s : songs) {
@@ -73,11 +83,17 @@ public class SongsPanel extends JScrollPane implements ListSelectionListener {
     rowsIds.clear();
   }
   
+  /**
+   * @return ID zaznaczonego elementu lub null jeśli nic nie jest zaznaczone.
+   */
   public Long getSelectedId() {
     int selectedRow = list.getSelectedRow();
     return selectedRow > -1 ? rowsIds.get(selectedRow) : null;
   }
   
+  /**
+   * @return lista ID zaznaczonych elementów.
+   */
   public List<Long> getSelectedIds() {
     List<Long> selectedIds = new ArrayList<Long>();
     for (int idx : list.getSelectedRows()) {
@@ -86,6 +102,9 @@ public class SongsPanel extends JScrollPane implements ListSelectionListener {
     return selectedIds;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void valueChanged(ListSelectionEvent e) {
     if (e.getValueIsAdjusting()) return;

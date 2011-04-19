@@ -9,6 +9,10 @@ import javax.swing.event.ListSelectionListener;
 import songo.ApplicationController;
 import songo.model.Artist;
 
+/**
+ * Panel zawierający listę wykonawców.
+ * @see ListPanel
+ */
 public class ArtistsPanel extends ListPanel {
   public ArtistsPanel(final ApplicationController app) {
     super(app);

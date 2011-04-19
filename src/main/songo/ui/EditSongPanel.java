@@ -25,6 +25,9 @@ import org.farng.mp3.TagException;
 import songo.ApplicationController;
 import songo.model.Song;
 
+/**
+ * Panel do edycji/wprowadzania metadancch utworu.
+ */
 public class EditSongPanel extends JInternalFrame implements ActionListener {
   final ApplicationController app;
   JTextField titleField;
@@ -39,6 +42,9 @@ public class EditSongPanel extends JInternalFrame implements ActionListener {
   Song song;
 
   /**
+   * Konstruktor.
+   * @param app konotroler aplikacji
+   * @param song Edytowany utwór
    * @wbp.parser.constructor
    */
   public EditSongPanel(ApplicationController app, Song song) {
@@ -50,16 +56,25 @@ public class EditSongPanel extends JInternalFrame implements ActionListener {
     }
   }
   
+  /**
+   * Konstruktor reprezentujący panel dodawania nowego utworu
+   */
   public EditSongPanel(ApplicationController app) {
     this(app, null);
   }
   
+  /**
+   * Zamyka panel
+   */
   public void close() {
     try {
       setClosed(true);
     } catch (PropertyVetoException e) {}
   }
   
+  /**
+   * Otwiera panel
+   */
   public void open() {
     setVisible(true);
     app.getContentPanel().add(this);
@@ -68,6 +83,10 @@ public class EditSongPanel extends JInternalFrame implements ActionListener {
     } catch (PropertyVetoException e) {}
   }
   
+  /**
+   * Wypełnia formularz metadanymi podanego utworu.
+   * @param song utwór
+   */
   public void setData(Song song) {
     this.song = song;
     fileField.setText(song.file.getAbsolutePath());
@@ -78,6 +97,10 @@ public class EditSongPanel extends JInternalFrame implements ActionListener {
     durationField.setText(song.getFormattedDuration());
   }
   
+  /**
+   * Wypełnia formularz podanymi metadanymi
+   * @param metadane
+   */
   public void setData(Map<String, Object> data) {
     fileField.setText(String.valueOf(data.get("file")));
     titleField.setText(String.valueOf(data.get("title")));

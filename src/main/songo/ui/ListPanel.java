@@ -15,13 +15,22 @@ import javax.swing.event.ListSelectionListener;
 
 import songo.ApplicationController;
 
+/**
+ * Panel zawierający listę.
+ */
 public class ListPanel extends JScrollPane implements ListSelectionListener {
   protected ApplicationController app;
   protected JList list;
   protected DefaultListModel listModel;
   
+  /** 
+   * Lista ID modeli odp. poszczególnym wierszom listy.
+   */
   protected List<Long> rowsIds = new ArrayList<Long>();
   
+  /**
+   * @param app konotroler aplikacji
+   */
   public ListPanel(final ApplicationController app) {
     this.app = app;
     
@@ -37,16 +46,27 @@ public class ListPanel extends JScrollPane implements ListSelectionListener {
     list.getSelectionModel().addListSelectionListener(this);
   }
   
+  /**
+   * Usuwa elementy listy
+   */
   public void clear() {
     rowsIds.clear();
     listModel.removeAllElements();
     list.clearSelection();
   }
   
+  /**
+   * Wybiera element listy o podanym indeksie.
+   * @param index indeks elementu do zaznaczenia (licząc od 0).
+   */
   public void select(int index) {
     list.setSelectedIndex(index);
   }
   
+  /**
+   * @return ID aktualnie zaznaczonego elementu na liście
+   * lub null jeśli nic nie jest znaznaczone.
+   */
   public Long getSelectedId() {
     int selectedIndex = list.getSelectedIndex();
     return selectedIndex > -1 ? rowsIds.get(selectedIndex) : null;
@@ -61,6 +81,9 @@ public class ListPanel extends JScrollPane implements ListSelectionListener {
     });
   }
   
+  /**
+   * Metoda wywoływana przy zmianie zaznaczenia na liście.
+   */
   protected void onSelected() {
   }
 }

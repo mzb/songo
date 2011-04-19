@@ -1,11 +1,4 @@
-create database if not exists "songo";
-use "songo";
-
-CREATE TABLE `songo`.`songs` (
-  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR  NOT NULL,
-  `track_number` TINYINT UNSIGNED,
-  PRIMARY KEY (`id`)
-)
-ENGINE = InnoDB
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE songo;
+CREATE TABLE IF NOT EXISTS `albums` (`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `artists` (`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `songs` (`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(255) DEFAULT NULL, `track_number` tinyint(3) unsigned DEFAULT NULL, `duration` int(10) unsigned DEFAULT NULL, `file` varchar(255) NOT NULL, `artist_id` bigint(20) unsigned DEFAULT NULL, `album_id` bigint(20) unsigned DEFAULT NULL, PRIMARY KEY (`id`), KEY `album_id_fk_constraint` (`album_id`), KEY `artist_id_fk_constraint` (`artist_id`), CONSTRAINT `album_id_fk_constraint` FOREIGN KEY (`album_id`) REFERENCES `albums` (`id`) ON DELETE CASCADE ON UPDATE SET NULL, CONSTRAINT `artist_id_fk_constraint` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE ON UPDATE SET NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8;
