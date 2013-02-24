@@ -196,6 +196,7 @@ public class ApplicationController {
     } catch (Database.Error e) {
       log.log(Level.SEVERE, "", e);
       frame.exception(e);
+
     }
   }
   
@@ -300,10 +301,7 @@ public class ApplicationController {
         public boolean accept(File f) {
           if (f.isDirectory()) return true;
           String[] name = f.getName().split("\\.");
-          if (name.length > 1 && name[1].equals("mp3")) {
-            return true;
-          }
-          return false;
+          return name.length > 1 && name[1].equals("mp3");
         }
       }; 
     }

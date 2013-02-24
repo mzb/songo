@@ -1,0 +1,14 @@
+1. Utworzyc baze danych o nazwie `songo':
+
+    create database songo;
+
+2. Uruchomic instalator przez dwukrotne klikniecie na plik install-songo.jar lub wydanie polecenia:
+
+    java -jar install-songo.jar
+
+3. Instalator pyta o adres serwera bazy danych, nazwe uzytkownika dla ktorego zostala utworzona baza oraz haslo.
+   Enter przy kazdej opcji powoduje wybranie wartosci domyslnej (podana w nawiasach []):
+
+4. Po zakonczeniu instalacji, mozna uruchomic aplikacje - songo.jar:
+
+    java -jar songo.jar

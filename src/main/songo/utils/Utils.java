@@ -16,7 +16,7 @@ public class Utils {
    * @param prefix prefiks
    * @return ciąg elementów
    */
-  public static String join(List<? extends Object> list, String separator, String prefix) {
+  public static String join(List<?> list, String separator, String prefix) {
     StringBuilder s = new StringBuilder();
     for (int i = 0; i < list.size(); i++) {
       s.append(prefix).append(list.get(i));
@@ -27,11 +27,11 @@ public class Utils {
     return s.toString();
   }
   
-  public static String join(List<? extends Object> list, String separator) {
+  public static String join(List<?> list, String separator) {
     return join(list, separator, "");
   }
   
-  public static String join(List<? extends Object> list) {
+  public static String join(List<?> list) {
     return join(list, ", ");
   }
 

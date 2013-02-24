@@ -220,7 +220,7 @@ public class Database {
    * @return połączone warunki
    * @see Utils#join(List, String)
    */
-  public static String sqlize(String operator, List<? extends Object> conditions) {
+  public static String sqlize(String operator, List<?> conditions) {
     return Utils.join(conditions, " " + operator + " ");
   }
   

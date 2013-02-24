@@ -41,7 +41,7 @@ public class AlbumsManager extends ModelManager<Album> {
 
   @Override
   public void update(Album album) throws Error {
-    
+
   }
 
   public Album findOrCreateByTitle(String title) throws Database.Error {
